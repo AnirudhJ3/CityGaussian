@@ -28,6 +28,6 @@ trainer:
   check_val_every_n_epoch: 20
   max_steps: 30000
 data:
-  path: /vol/data/Crofts_Lot
+  path: /vol/data/Crofts_Lot_B
   parser:
     class_path: EstimatedDepthBlockColmap
