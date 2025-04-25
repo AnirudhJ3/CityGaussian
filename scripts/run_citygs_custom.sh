@@ -11,7 +11,7 @@ get_available_gpu() {
 # ========== Project Setup ==========
 NAME=crofts_lot_gsplats
 PROJECT=CityGSV2_CroftsLot
-CONFIG_PATH=configs/crofts_lot.yaml
+CONFIG_PATH=configs/custom_aerial.yaml
 DATA_PATH=/vol/data/Crofts_Lot
 
 # ========== Step 1: Train Model ==========
