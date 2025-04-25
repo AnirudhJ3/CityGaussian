@@ -33,7 +33,6 @@ echo "GPU $gpu_id is available for training."
 CUDA_VISIBLE_DEVICES=$gpu_id python main.py fit \
     --config $CONFIG_PATH \
     -n "$NAME" \
-    --logger wandb \
     --project "$PROJECT" \
     --data.path "$DATA_PATH"
 
