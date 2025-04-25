@@ -12,6 +12,7 @@ DATA_PATH="$1"
 NAME="${2:-$(basename "$DATA_PATH")_gsplats}"  # default to foldername_gsplats
 PROJECT="${3:-CityGSV2_$NAME}"                 # default to CityGSV2_foldername_gsplats
 CONFIG_PATH="configs/custom_aerial.yaml"       # config stays fixed for now
+DOWNSAMPLE_RATIO=1
 
 # ========== GPU Selection ==========
 get_available_gpu() {
@@ -21,9 +22,14 @@ get_available_gpu() {
   '
 }
 
+# ========== Step 0: Estimate Depth ==========
+gpu_id=$(get_available_gpu)
+echo "GPU $gpu_id is available for depth estimation."
+CUDA_VISIBLE_DEVICES=$gpu_id python utils/estimate_dataset_depths.py "$DATA_PATH" -d $DOWNSAMPLE_RATIO
+
 # ========== Step 1: Train Model ==========
 gpu_id=$(get_available_gpu)
-echo "GPU $gpu_id is available."
+echo "GPU $gpu_id is available for training."
 CUDA_VISIBLE_DEVICES=$gpu_id python main.py fit \
     --config $CONFIG_PATH \
     -n "$NAME" \
@@ -33,7 +39,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id python main.py fit \
 
 # ========== Step 2: Evaluate and Save Outputs ==========
 gpu_id=$(get_available_gpu)
-echo "GPU $gpu_id is available."
+echo "GPU $gpu_id is available for evaluation."
 CUDA_VISIBLE_DEVICES=$gpu_id python main.py test \
     --config outputs/$NAME/config.yaml \
     --data.path "$DATA_PATH" \
@@ -43,7 +49,7 @@ CUDA_VISIBLE_DEVICES=$gpu_id python main.py test \
 
 # ========== Step 3: Extract Mesh from Splats ==========
 gpu_id=$(get_available_gpu)
-echo "GPU $gpu_id is available."
+echo "GPU $gpu_id is available for mesh extraction."
 CUDA_VISIBLE_DEVICES=$gpu_id python utils/gs2d_mesh_extraction.py \
     outputs/$NAME \
     --voxel_size 0.01 \
